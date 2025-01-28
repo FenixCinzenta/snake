@@ -2,7 +2,7 @@
 
 This is a **Snake Game** implemented in C. It uses structured programming, dynamic memory allocation, and data structures like arrays and linked concepts to create a classic snake game. The game includes customizable difficulty levels and features smooth snake movement, wall wrapping, and fruit collection mechanics.
 
-![Game Preview](./video.gif)
+![Game Preview](./example.gif)
 
 ## 🐍 Features
 - **Snake Movement**: Control the snake using the keyboard (`W`, `A`, `S`, `D`) for directional input.

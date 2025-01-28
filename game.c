@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <conio.h>
+#include <windows.h>
 
 typedef struct {
 
@@ -52,6 +53,20 @@ typedef struct {
 
 } Game;
 
+void set_cursor_position(int x, int y) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD position = { x, y };
+    SetConsoleCursorPosition(hConsole, position);
+}
+
+void hide_cursor() {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(hConsole, &cursorInfo);
+    cursorInfo.bVisible = FALSE;
+    SetConsoleCursorInfo(hConsole, &cursorInfo);
+}
+
 void initialize_table(Table* t, int difficulty);
 void free_table(Table* t);
 void initialize_snake(Snake* s, Table* t);
@@ -72,6 +87,7 @@ void verify_win(Game* g);
 int main() {
 
     srand(time(NULL));
+    hide_cursor();
 
     int difficulty = select_difficulty();
 
@@ -96,6 +112,7 @@ int main() {
         usleep(100000);
     }
 
+    set_cursor_position(0, 0);
     if(game.status == WON) {
         printf("\e[1;1H\e[2J");
 
@@ -306,43 +323,38 @@ void verify_keyboard(Game* g) {
 }
 
 void draw_sprites(Game* g) {
+    set_cursor_position(0, 0);
 
-    printf("\e[1;1H\e[2J"); //clear the screen
-
-    for(int i=0; i<g->_table->size; i++) { //clear the board
-        for(int j=0; j<g->_table->size; j++) {
-            g->_table->board[i][j] = ' ';
-        }
-    }
-
-    g->_table->board[g->_snake->pos_x][g->_snake->pos_y] = g->_snake->head_sprite; //draw the head on the board
-    for(int i=0; i<g->_snake->body_size; i++) { //draw the body on the board
-        g->_table->board[g->_snake->old_x[i]][g->_snake->old_y[i]] = g->_snake->body_sprite;
-
-    }
-
-    g->_table->board[g->_fruit->pos_x][g->_fruit->pos_y] = g->_fruit->fruit_sprite; //draw the fruit on the board
-
-    for(int i=0; i<g->_table->size+2; i++) { //print the board
-
-        for(int j=0; j<g->_table->size+2; j++) {
-
-            if(j == 0 || j == g->_table->size + 1) {
+    for (int i = 0; i < g->_table->size + 2; i++) {
+        for (int j = 0; j < g->_table->size + 2; j++) {
+            if (i == 0 || i == g->_table->size + 1 || j == 0 || j == g->_table->size + 1) {
                 printf("%c ", g->board_sprite);
-                continue;
-            }
 
-            if(i == 0 || i == g->_table->size + 1) {
-                printf("%c ", g->board_sprite);
-                continue;
-            }
+            } else if (i - 1 == g->_snake->pos_x && j - 1 == g->_snake->pos_y) {
+                printf("%c ", g->_snake->head_sprite);
 
-            printf("%c ", g->_table->board[i-1][j-1]);
+            } else if (i - 1 == g->_fruit->pos_x && j - 1 == g->_fruit->pos_y) {
+                printf("%c ", g->_fruit->fruit_sprite);
+
+            } else {
+                int is_body = 0;
+                for (int k = 0; k < g->_snake->body_size; k++) {
+                    if (i - 1 == g->_snake->old_x[k] && j - 1 == g->_snake->old_y[k]) {
+                        printf("%c ", g->_snake->body_sprite);
+                        is_body = 1;
+                        break;
+                    }
+                }
+                if (!is_body) {
+                    
+                    printf("  ");
+                }
+            }
         }
         printf("\n");
     }
-
 }
+
 
 void initialize_table(Table* t, int difficulty) {
 

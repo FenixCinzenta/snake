@@ -15,9 +15,9 @@ This is a **Snake Game** implemented in C. It uses structured programming, dynam
 
 ## 🎮 How to Play
 1. **Choose Difficulty**:  
-   - 1: Easy (Board size 5x5)  
-   - 2: Medium (Board size 10x10)  
-   - 3: Hard (Board size 16x16)
+   - 1: Easy
+   - 2: Medium
+   - 3: Hard
 
 2. **Controls**:
    - `W`: Move up
